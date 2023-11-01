@@ -1,0 +1,15 @@
+{
+  "name": "mybudgetingapp",
+  "version": "1.0.0",
+  "description": "A budgeting app portfolio project.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "uuidv4": "^6.2.13"
+  },
+  "type":"module"
+}
