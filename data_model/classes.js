@@ -23,6 +23,20 @@ class User {
             return true;
         }
     }
+    getBudget(budgetID){
+        let budgetObject = null;
+        for (let budget of this.budgets){
+            if (budget.id === budgetID){
+                budgetObject = budget;
+                break;
+            }
+        }
+        if (budgetObject !== null){
+            return budgetObject;
+        } else {
+            return false;
+        }
+    }
 }
 
 class Budget {
@@ -41,6 +55,10 @@ class Budget {
         this.payees = [];
         this.transactions = [];
     }
+
+    getBalances(){
+        return this.balances;
+    }
     addtoUnassignedBalance(addend) {
         for (let balance of this.balances) {
             if (balance.type = 'unassigned') {
@@ -50,6 +68,7 @@ class Budget {
             }
         }
     }
+
     setAccount(name, balance) {
         this.accounts.push(new Account(name, formatFloatToCurrency(this.locale,this.currency,balance)));
         this.accounts.sort((a1, a2) => (a1.name > a2.name) ? 1 : (a1.name < a2.name) ? -1 : 0);
@@ -64,17 +83,20 @@ class Budget {
         }
         return balance;
     }
-    deleteAccount(accountID) {
-        for (let i in this.accounts){
-            if (this.accounts[i].id === accountID){
-                this.accounts.splice(i,1);
-            }
-        }
+    
+    setGroup(name) {
+        this.groups.push(name);
+        this.groups.sort();
     }
 
-    getBalances(){
-        return this.balances;
-    }
+
+
+
+
+
+
+
+
 
 
 
@@ -222,6 +244,8 @@ class Account {
         this.balance = balance;
     }
 }
+
+
 
 class Category {
     constructor(id, name, groupName, year, month) {
