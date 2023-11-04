@@ -1,10 +1,9 @@
-import { formatFloatToCurrency,formatCurrencyToFloat } from '../parse/parse_currency.js';
+import { Currency } from "./currency_formatter.js";
 
 export class DataModel{
     constructor(user,locale,currency,selectedBudgetIndex){
         this.user = user;
-        this.locale = locale;
-        this.currency = currency;
+        this.currencyFormatter =
         this.selectedBudgetIndex = selectedBudgetIndex;
     }
     
