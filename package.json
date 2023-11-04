@@ -9,7 +9,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "uuidv4": "^6.2.13"
+    "crypto": "^1.0.1"
   },
-  "type":"module"
+  "type": "module"
 }

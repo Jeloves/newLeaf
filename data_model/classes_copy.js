@@ -1,83 +1,48 @@
-import { formatCurrencyToFloat,formatFloatToCurrency } from "../parse/parse_currency.js";
+import { v4 as uuidv4 } from 'uuid';
+
 
 class User {
     constructor(username, password, email) {
-        this.id = window.crypto.randomUUID();
+        this.id = uuidv4();
         this.username = username;
         this.password = password;
         this.email = email;
         this.budgets = [];
     }
-    setBudget(name, year, month, day, locale, currency) {
-        let nameTaken = false;
-        for (let budget in this.budgets){
-            if (budget.name === name){
-                nameTaken = true;
-                break;
-            }
-        }
-        if (nameTaken){
-            return false;
-        } else {
-            this.budgets.push(new Budget(name, year, month, day, locale, currency));
-            return true;
-        }
+    makeBudget(name, date) {
+        this.budgets.push(new Budget(name, date));
     }
 }
 
 class Budget {
-    constructor(name, year, month, day, locale, currency) {
-        this.id = window.crypto.randomUUID();
+    constructor(name, yearCreated, monthCreated, dayCreated) {
+        this.id = uuidv4();
         this.name = name;
-        this.year = year;
-        this.month = month;
-        this.day = day;
-        this.locale = locale;
-        this.currency = currency;
+        this.yearCreated = yearCreated;
+        this.monthCreated = monthCreated;
+        this.dayCreated = dayCreated;
         this.accounts = [];
         this.groups = [];
-        this.categories = [new Category('unassigned_category', 'unassigned', 'unassigned_group', year, month)];
-        this.balances = [new Balance('unassigned', formatFloatToCurrency(locale,currency,0.00), 'unassigned_category', year, month)];
+        this.categories = [new Category('unassigned_category', 'unassigned', 'unassigned_group', yearCreated, monthCreated)];
+        this.balances = [new Balance('unassigned', 0.00, 'unassigned_category', yearCreated, monthCreated)];
         this.payees = [];
         this.transactions = [];
     }
-    addtoUnassignedBalance(addend) {
+
+
+    addtoUnassignedBalance(amount) {
         for (let balance of this.balances) {
             if (balance.type = 'unassigned') {
-                const oldBalanceFloat = formatCurrencyToFloat(balance.amount);
-                balance.amount = formatFloatToCurrency(this.locale,this.currency,oldBalanceFloat + addend);
+                balance.amount += amount;
                 break;
             }
         }
     }
-    setAccount(name, balance) {
-        this.accounts.push(new Account(name, formatFloatToCurrency(this.locale,this.currency,balance)));
+    addAccount(name, balance, currency) {
+        this.accounts.push(new Account(name, balance, currency));
         this.accounts.sort((a1, a2) => (a1.name > a2.name) ? 1 : (a1.name < a2.name) ? -1 : 0);
+        this.addtoUnassignedBalance(balance);
     }
-    getAccountBalance(accountID){
-        let balance = null;
-        for (let account of this.accounts){
-            if (account.id === accountID){
-                balance = account.balance;
-                break;
-            }
-        }
-        return balance;
-    }
-    deleteAccount(accountID) {
-        for (let i in this.accounts){
-            if (this.accounts[i].id === accountID){
-                this.accounts.splice(i,1);
-            }
-        }
-    }
-
-    getBalances(){
-        return this.balances;
-    }
-
-
-
     getAccountIDbyName(accountName) {
         let accountID = null;
         for (let account of this.accounts) {
@@ -101,7 +66,7 @@ class Budget {
         this.groups.sort();
     }
     addCategory(name, groupName, year, month) {
-        const categoryID = window.crypto.randomUUID();
+        const categoryID = uuidv4();
         this.categories.push(new Category(categoryID, name, groupName, year, month));
         this.categories.sort((c1, c2) => (c1.name > c2.name) ? 1 : (c1.name < c2.name) ? -1 : 0);
         this.balances.push(new Balance('assigned', 0.00, categoryID, year, month));
@@ -216,10 +181,11 @@ class Budget {
 }
 
 class Account {
-    constructor(name, balance) {
-        this.id = window.crypto.randomUUID();
+    constructor(name, balance, currency) {
+        this.id = uuidv4();
         this.name = name;
         this.balance = balance;
+        this.currency = currency;
     }
 }
 
@@ -228,8 +194,8 @@ class Category {
         this.id = id;
         this.name = name;
         this.groupName = groupName;
-        this.year = year;
-        this.month = month;
+        this.yearCreated = year;
+        this.monthCreated = month;
     }
 }
 
@@ -245,7 +211,7 @@ class Balance {
 
 class Transaction {
     constructor(amount, payee, year, month, day, accountID, categoryID) {
-        this.id = window.crypto.randomUUID();
+        this.id = uuidv4();
         this.amount = amount;
         this.payee = payee;
         this.year = year;
@@ -260,11 +226,3 @@ export {
     User, Budget,
 }
 
-
-
-
-/*
-Notes
-
-    - Empty balances must be added whenever a new date is navigated to.
-*/
